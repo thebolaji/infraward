@@ -243,7 +243,8 @@ code. **Verify coverage against a real account before adding an entry** —
 several entries in the current table needed correction after testing live;
 see the comments above `Table` in that file for specifics.
 
-A full `CONTRIBUTING.md` walkthrough is planned but not written yet.
+See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the branching strategy,
+commit conventions, and local checks to run before opening a PR.
 
 ## License
 
