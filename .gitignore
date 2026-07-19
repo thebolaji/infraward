@@ -1,0 +1,6 @@
+/infraward
+/dist/
+.infraward/
+*.tfstate
+*.tfstate.backup
+.claude/

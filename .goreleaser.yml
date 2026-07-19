@@ -1,0 +1,74 @@
+version: 2
+
+project_name: infraward
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: infraward
+    main: ./cmd/infraward
+    binary: infraward
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+
+archives:
+  - id: infraward
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}
+    files:
+      - README.md
+      - LICENSE*
+
+checksum:
+  name_template: "checksums.txt"
+
+# GoReleaser soft-deprecated `brews` in favor of `homebrew_casks` (v2.10+),
+# but casks are macOS-only -- InfraWard also ships Linux binaries, and
+# Homebrew formulas (unlike casks) install fine on Linuxbrew too. Verified
+# `brews` still works as of goreleaser 2.17.0 (a snapshot release produced a
+# correct per-OS/per-arch formula); revisit if a future GoReleaser version
+# removes it outright.
+brews:
+  - name: infraward
+    repository:
+      owner: thebolaji
+      name: homebrew-infraward
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    directory: Formula
+    homepage: "https://github.com/thebolaji/infraward"
+    description: "driftctl is dead. InfraWard is its successor: drift detection for Terraform on AWS."
+    license: "Apache-2.0"
+    install: |
+      bin.install "infraward"
+    test: |
+      system "#{bin}/infraward", "--version"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^test:"
+      - "^chore:"
+
+release:
+  github:
+    owner: thebolaji
+    name: infraward
+  footer: >-
+    InfraWard is read-only: it never writes to AWS. See the README for the
+    minimal IAM policy and non-goals.
